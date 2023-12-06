@@ -46,12 +46,7 @@ Paar exemplaren van code binnen privé repositories van Hogeschool Leiden.
         </mat-grid-tile>
       </div>
         <mat-grid-tile>
-          <mat-form-field>
-            <mat-label>Patroon Lengte</mat-label>
-            <input matInput type="number" name="pattern_length" id="pattern_length" formControlName="patternLength">
-            <mat-error *ngIf="!inputData.get('articleData.patternLength').valid && inputData.get('articleData.patternLength').value < 0 && inputData.get('articleData.patternLength').value != null">Patroon L. mag niet onder <b>0</b> zitten</mat-error>
-            <mat-error *ngIf="!inputData.get('articleData.patternLength').valid && inputData.get('articleData.patternLength').touched">Patroon Lengte is <b>verplicht</b></mat-error>
-          </mat-form-field>
+          <!-- pattern length -->
         </mat-grid-tile>
         <mat-grid-tile>
           <!-- pattern width-->
@@ -80,12 +75,7 @@ Paar exemplaren van code binnen privé repositories van Hogeschool Leiden.
         </mat-grid-tile>
 
         <mat-grid-tile>
-          <mat-form-field>
-            <mat-label>Gewicht</mat-label>
-            <input matInput type="number" name="weight" id="weight" formControlName="weight">
-            <mat-error *ngIf="!inputData.get('articleDescription.weight').valid && inputData.get('articleDescription.weight').value <= 0 && inputData.get('articleDescription.weight').value != null">Gewicht mag niet onder <b>1</b> zitten</mat-error>
-            <mat-error *ngIf="!inputData.get('articleDescription.weight').valid && inputData.get('articleDescription.weight').touched">Gewicht is <b>verplicht</b></mat-error>
-          </mat-form-field>
+          <!-- weight -->>
         </mat-grid-tile>
 
         <mat-grid-tile>
@@ -102,26 +92,17 @@ Paar exemplaren van code binnen privé repositories van Hogeschool Leiden.
           <!-- type-->
         </mat-grid-tile>
         <mat-grid-tile>
-          <mat-form-field>
-            <mat-label>Stof Breedte</mat-label>
-            <input matInput type="number" name="cloth_width" id="cloth_width" formControlName="clothWidth">
-            <mat-error *ngIf="!inputData.get('articleDescription.clothWidth').valid && inputData.get('articleDescription.clothWidth').value <= 0 && inputData.get('articleDescription.clothWidth').value != null">StofBreedte mag niet onder <b>1</b> zitten</mat-error>
-            <mat-error *ngIf="!inputData.get('articleDescription.clothWidth').valid && inputData.get('articleDescription.clothWidth').touched">Stof Breedte is <b>verplicht</b></mat-error>
-          </mat-form-field>
+          <!-- clothwidth -->
         </mat-grid-tile>
 
         <mat-grid-tile>
-          <mat-form-field>
-            <mat-label>Minimale Voorraad</mat-label>
-            <input matInput type="number" name="minimum_stock" id="minimum_stock" formControlName="minimumStock">
-            <mat-error *ngIf="!inputData.get('articleDescription.minimumStock').valid && inputData.get('articleDescription.minimumStock').value < 0 && inputData.get('articleDescription.minimumStock').value != null">Min. Voorraaad mag niet onder <b>0</b> zitten</mat-error>
-            <mat-error *ngIf="!inputData.get('articleDescription.minimumStock').valid && inputData.get('articleDescription.minimumStock').touched">Minimale Voorraad is <b>verplicht</b></mat-error>
-          </mat-form-field>
+          <!-- minimum_stock -->
         </mat-grid-tile>
         <mat-grid-tile>
           <!-- description -->
         </mat-grid-tile>
       </div>
+      <!-- Hier komen de klanten vanuit de database -->
       <mat-grid-tile>
         <mat-form-field appearance="fill">
           <mat-label>Klant</mat-label>
@@ -162,15 +143,19 @@ import {ArticleCustomerRec} from "../../models/ArticleCustomerRec.model";
   templateUrl: './waste-add.component.html',
   styleUrls: ['./waste-add.component.scss']
 })
+
+// Roept een Service op die de API calls afhandelt in de Front-End
 export class WasteAddComponent implements OnInit{
   constructor(private http: HttpService) {
 
   }
 
+// Haalt alle klanten op in de database die bestellingen heeft.
   ngOnInit() {
     this.getCustomers()
   }
 
+// Objecten aanmaken die gebonden worden aan de input velden van de forum. 
   private articleData = new ArticleData;
   private articleDescription = new ArticleDescription;
   private article = new Article;
@@ -199,6 +184,7 @@ export class WasteAddComponent implements OnInit{
     'stockRLValues': [true, false]
   }
 
+// Inputform dat alle data opneemt van wat er is ingevult met regex op sommige numerieke invulvelden. Dit is gedaan op basis van de ontvangen informatie in een excel bestand van de opdrachtgever.
   inputData: FormGroup = new FormGroup({
     'articleData': new FormGroup({
       'color': new FormControl(null, Validators.required),
@@ -227,6 +213,7 @@ export class WasteAddComponent implements OnInit{
     'customer': new FormControl(null, Validators.required)
   });
 
+// Benaming doorgeven van een gedeelte URL voor de GET request van de klanten.
   getCustomers() {
     return this.http.getData<Customer>("/api/v2/customer").subscribe(
       (_customerList) => {
@@ -235,12 +222,13 @@ export class WasteAddComponent implements OnInit{
     );
   }
 
+// Het aanpassen van de eerdere formaat dat is verwezen aan de team.
   async onSubmit() {
     this.articleData = this.inputData.controls['articleData'].value;
     this.articleData.composition = this.inputData.get('articleData.composition.composition_percentage').value + "% " + this.inputData.get('articleData.composition.composition_category').value;
     this.articleDescription = this.inputData.controls['articleDescription'].value;
     this.customer = this.inputData.controls['customer'].value;
-
+// Iedere helft van de Artikel wordt doorverstuurd om opgeslagen te worden. En opnieuw opgehaald uit de database met een automatisch gegenereerde Id.
     const data = await firstValueFrom(this.http.sendData<ArticleData>("/api/v2/article_data", this.articleData));
     const desc = await firstValueFrom(this.http.sendData<ArticleDescription>("/api/v2/article_description", this.articleDescription));
 
@@ -248,7 +236,7 @@ export class WasteAddComponent implements OnInit{
     this.article.article_descriptionID = desc;
     this.articleWithCustomer.article = this.article;
     this.articleWithCustomer.customer = this.customer;
-    console.log(JSON.stringify(this.articleWithCustomer));
+// Dan wordt de Artikel met de klant opgeslagen
     this.http.sendData<ArticleCustomerRec>("/api/v2/article", this.articleWithCustomer);
 
     this.onCancel();
@@ -268,6 +256,7 @@ export class WasteAddComponent implements OnInit{
 <div class="main-container d-flex">
   <div class="container shadow-lg">
     <div class="row">
+    <!-- De maand boven aan de pagina wordt vertoond en navigatie knoppen om naar de volgende en vorige week te gaan -->
       <h2 class="text-center text-success mb-3 mt-3 .head-text">{{this.shownMonth | date: "MMMM"}} - {{this.shownMonth | date: "YYYY"}}</h2>
       <nav aria-label="Page navigation example">
         <ul class="pagination adjust-content">
@@ -301,6 +290,7 @@ export class WasteAddComponent implements OnInit{
         </tr>
         </thead>
         <tbody>
+        <!-- Alle passende data invullen per rij per toegevoegde medewerker waarvan de verlofdag goedgekeurd is -->
         <tr *ngFor="let currentUser of userDTOs" id="row_{{currentUser.id}}">
           <td><div class="cell-content">{{currentUser.chapterName}}</div></td>
           <td><div class="cell-content">{{currentUser.teamName}}</div></td>
@@ -338,11 +328,11 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
     aspect-ratio: 3 / 2;
   }
 }
-
+ /* kleur voor de huidige dag van de week */
 .active {
   background-color: #f8dc0a;
 }
-
+/* kleur voor de toekomstige dagen */
 .row-title {
   background-color: #3d9152;
   color: #EAFFF5;
@@ -361,7 +351,7 @@ th {
   position: sticky;
   top: 0;
 }
-
+/* Is de css element dat in één vlak zit wanneer een medewerker verlof heeft op één dag. */
 .background-checkered {
   opacity: 0.5;
   background: repeating-linear-gradient( 45deg, #444cf7, #444cf7 5px, #e5e5f7 5px, #e5e5f7 25px );
@@ -399,7 +389,7 @@ th {
       width: 100%;
     }
   }
-
+/* Is de css element dat in één vlak zit wanneer een medewerker verlof heeft op één dag. */
   .background-checkered {
     opacity: 0.5;
     background: repeating-linear-gradient(45deg, #444cf7, #444cf7 5px, #e5e5f7 5px, #e5e5f7 25px);
@@ -444,13 +434,14 @@ export class LeaverequestOverviewComponent implements OnInit {
     private dateService: DateService
   ) {
   }
-
+/* de onderstaande variabelen zijn voor het bepalen van de week en dag */
   public curr = new Date();
   public week: Date[] = [];
   public currentWeekNumber: number;
   public currentWeek: { userId: string, leaveRequestDTO: LeaveRequestDTO[] }[] = []
   public shownMonth = new Date();
   public magicalWeekInMsNumber = 7 * 24 * 60 * 60 * 1000;
+/* de onderstaande variabelen zijn voor het opnemen van de data van de medewerkers en verlofverzoeken */
   public userDTOs: UserDTOWithNames[] = [];
   private collectedUserData: User[] = [];
   private collectedAcceptedLeaveRequests: LeaveRequest[] = [];
@@ -466,6 +457,7 @@ export class LeaverequestOverviewComponent implements OnInit {
     if (this.curr.getDay() == 0) {
       this.currentWeekNumber -= 1;
     }
+/* het organiseren de dagen naar Mon - Sun, i.p.v. Sun - Sat */
     for (let i = 1; i <= 7; i++) {
       let first = curr.getDate() - curr.getDay() + i
       let day = new Date(curr.setDate(first))
@@ -473,6 +465,7 @@ export class LeaverequestOverviewComponent implements OnInit {
       this.week.push(insertableDay)
     }
     this.shownMonth = new Date(this.curr.getTime() + (this.currentWeekNumber * this.magicalWeekInMsNumber));
+/* alle medewerkers in de aangegeven team verbinden aan hun chapters en verlofverzoeken die zijn geaccepteerd in de huidige week */
     this.userService.getAllUsers().subscribe({
       next: () => {
         this.collectedUserData = this.userService.users;
@@ -503,6 +496,7 @@ export class LeaverequestOverviewComponent implements OnInit {
 
   }
 
+/* het bewaren van de huidige week dat is berekend in een session token voor snellere navigatie in de calender */
   private checkForWindowSessionStorageToken() {
     let stringedRetrievedWeekNumber;
     if (!(window.sessionStorage.hasOwnProperty('currentWeekNumber'))) {
@@ -538,6 +532,7 @@ export class LeaverequestOverviewComponent implements OnInit {
     return shortenedUserList;
   }
 
+/* het benodigde informatie ophalen van de geaccepteerde verlofverzoeken die relevant zijn voor het invullen van de kalender per dag. */
   private async getCalenderData(): Promise<{ userId: string, leaveRequestDTO: LeaveRequestDTO[] }[]> {
     let leaveRequestDTOList: { userId: string, leaveRequestDTO: LeaveRequestDTO[] }[] = [];
     let res = await firstValueFrom(this.leaverequestService.getAcceptedLeaveRequestDTO())
@@ -565,6 +560,7 @@ export class LeaverequestOverviewComponent implements OnInit {
     });
   }
 
+/* Het invullen van de kalender in HTML met de opgenomen data */
   public processCalenderCells(data: { userId: string, leaveRequestDTO: LeaveRequestDTO[] }[]) {
     for (const userLeaveRequests of data) {
       let targetableId = userLeaveRequests.userId + "_cell_";
