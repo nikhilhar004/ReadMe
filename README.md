@@ -7,6 +7,7 @@ Paar exemplaren van code binnen privé repositories van Hogeschool Leiden.
 <form (ngSubmit)="onSubmit()" [formGroup]="inputData">
   <mat-dialog-content>
     <mat-grid-list cols="3" rowHeight="75px">
+      <!-- Eerste helft van de Object Artikel in het systeem genaamd ArticleData -->
       <div formGroupName="articleData">
         <mat-grid-tile colspan="1">
           <mat-form-field >
@@ -17,16 +18,7 @@ Paar exemplaren van code binnen privé repositories van Hogeschool Leiden.
         </mat-grid-tile>
         <mat-grid-tile colspan="1">
           <mat-form-field>
-            <mat-label>Productgroep</mat-label>
-            <input matInput type="text" name="productgroup" id="productgroup" formControlName="productgroup">
-            <mat-error *ngIf="!inputData.get('articleData.productgroup').valid && inputData.get('articleData.productgroup').touched">Productgroep is <b>verplicht</b></mat-error>
-          </mat-form-field>
-        </mat-grid-tile>
-        <mat-grid-tile colspan="1">
-          <mat-form-field>
-            <mat-label>Leverancier</mat-label>
-            <input matInput type="text" name="supplier" id="supplier" formControlName="supplier">
-            <mat-error *ngIf="!inputData.get('articleData.supplier').valid && inputData.get('articleData.supplier').touched">Leverancier is <b>verplicht</b></mat-error>
+            <!-- herhaling van andere benodigde attributen voor het toevoegen van een Artikel, productgroup & supplier-->
           </mat-form-field>
         </mat-grid-tile>
         <div formGroupName="composition">
@@ -62,12 +54,7 @@ Paar exemplaren van code binnen privé repositories van Hogeschool Leiden.
           </mat-form-field>
         </mat-grid-tile>
         <mat-grid-tile>
-          <mat-form-field>
-            <mat-label>Patroon Breedte</mat-label>
-            <input matInput type="number" name="pattern_width" id="pattern_width" formControlName="patternWidth">
-            <mat-error *ngIf="!inputData.get('articleData.patternWidth').valid && inputData.get('articleData.patternWidth').value < 0 && inputData.get('articleData.patternWidth').value != null">Patroon B. mag niet onder <b>0</b> zitten</mat-error>
-            <mat-error *ngIf="!inputData.get('articleData.patternWidth').valid && inputData.get('articleData.patternWidth').touched">Patroon Breedte is <b>verplicht</b></mat-error>
-          </mat-form-field>
+          <!-- pattern width-->
         </mat-grid-tile>
 
         <mat-grid-tile>
@@ -83,20 +70,13 @@ Paar exemplaren van code binnen privé repositories van Hogeschool Leiden.
           </mat-form-field>
         </mat-grid-tile>
         <mat-grid-tile>
-          <mat-form-field>
-            <mat-label>Eancode</mat-label>
-            <input matInput type="text" name="eancode" id="eancode" formControlName="eancode">
-            <mat-error *ngIf="!inputData.get('articleData.eancode').valid && inputData.get('articleData.eancode').touched">Eancode is <b>verplicht</b></mat-error>
-          </mat-form-field>
+          <!-- eancode-->
         </mat-grid-tile>
       </div>
+      <!-- Tweede helft van het Object Artikel genaamd ArticleDescription -->
       <div formGroupName="articleDescription">
         <mat-grid-tile>
-          <mat-form-field>
-            <mat-label>Layout</mat-label>
-            <input matInput type="text" name="layout" id="layout" formControlName="layout">
-            <mat-error *ngIf="!inputData.get('articleDescription.layout').valid && inputData.get('articleDescription.layout').touched">Layout is <b>verplicht</b></mat-error>
-          </mat-form-field>
+          <!-- layout-->
         </mat-grid-tile>
 
         <mat-grid-tile>
@@ -109,35 +89,17 @@ Paar exemplaren van code binnen privé repositories van Hogeschool Leiden.
         </mat-grid-tile>
 
         <mat-grid-tile>
-          <mat-form-field>
-            <mat-label>Wascode</mat-label>
-            <input matInput type="text" name="washcode" id="washcode" formControlName="washcode">
-            <mat-error *ngIf="!inputData.get('articleDescription.washcode').valid && inputData.get('articleDescription.washcode').touched">Wascode is <b>verplicht</b></mat-error>
-          </mat-form-field>
+          <!-- washcode-->
         </mat-grid-tile>
         <mat-grid-tile>
-          <mat-form-field>
-            <mat-label>Tiltable</mat-label>
-            <mat-select formControlName="not_tiltable">
-              <mat-option *ngFor="let tiltoption of not_tiltable.ableToTilt; let i = index" id="not_tiltable" [value]="not_tiltable.tiltValues[i]" >{{ tiltoption }}</mat-option>
-            </mat-select>
-            <mat-error *ngIf="!inputData.get('articleDescription.not_tiltable').valid && inputData.get('articleDescription.not_tiltable').touched">Kantelbaarheid aangeven is <b>verplicht</b></mat-error>
-          </mat-form-field>
+          <!-- tiltable -->
         </mat-grid-tile>
 
         <mat-grid-tile>
-          <mat-form-field>
-            <mat-label>Artikelnummer</mat-label>
-            <input matInput type="text" name="article_number" id="article_number" formControlName="articlenumber">
-            <mat-error *ngIf="!inputData.get('articleDescription.articlenumber').valid && inputData.get('articleDescription.articlenumber').touched">Artikelnummer is <b>verplicht</b></mat-error>
-          </mat-form-field>
+          <!-- articlenummer -->
         </mat-grid-tile>
         <mat-grid-tile>
-          <mat-form-field>
-            <mat-label>Soort</mat-label>
-            <input matInput type="text" name="type" id="type" formControlName="type">
-            <mat-error *ngIf="!inputData.get('articleDescription.type').valid && inputData.get('articleDescription.type').touched">Soort is <b>verplicht</b></mat-error>
-          </mat-form-field>
+          <!-- type-->
         </mat-grid-tile>
         <mat-grid-tile>
           <mat-form-field>
@@ -157,11 +119,7 @@ Paar exemplaren van code binnen privé repositories van Hogeschool Leiden.
           </mat-form-field>
         </mat-grid-tile>
         <mat-grid-tile>
-          <mat-form-field>
-            <mat-label>Beschrijving</mat-label>
-            <input matInput type="text" name="description" id="description" formControlName="description">
-            <mat-error *ngIf="!inputData.get('articleDescription.description').valid && inputData.get('articleDescription.description').touched">Beschrijving is <b>verplicht</b></mat-error>
-          </mat-form-field>
+          <!-- description -->
         </mat-grid-tile>
       </div>
       <mat-grid-tile>
