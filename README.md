@@ -1,7 +1,13 @@
 # ReadMe
 Paar exemplaren van code binnen privé repositories van Hogeschool Leiden.
 
-# Toevoegingsforum voor de Gordijnrollenbeheersysteem voor Atelier van der Lelie
+# Toevoegingsforum voor de Gordijnrollenbeheersysteem in Angular
+Dit was een use-case geweest voor het bedrijf genaamd: Atelier van der Lelie. Hierbij moest er een methode worden gemaakt om een nieuwe artikel van gordijnrol resten toe te voegen aan een door medestudenten opgezette database. Deze database was gebaseerd op alleen informatie dat was gegeven in een excel bestand, de waardes die waren meegeleverd zijn voornamelijk boolean, strings en integers. Hierdoor moesten op basis van de entiteiten de gegeven van de artikel dat wordt doorgegeven in twee delen samen met één klant die gebonden wordt aan de bestelling, de indelingen van objecten zijn:
+  -Artikel
+  -ArtikelData
+  -ArtikelDescriptie
+  -Klant
+Dit moest volgens de onderstaande figma exemplaar die was gemaakt, voordat dit project werd ontwikkeld in Angular.
 ```HTML
 <h2 mat-dialog-title>Afval Toevoegen</h2>
 <form (ngSubmit)="onSubmit()" [formGroup]="inputData">
@@ -9,110 +15,14 @@ Paar exemplaren van code binnen privé repositories van Hogeschool Leiden.
     <mat-grid-list cols="3" rowHeight="75px">
       <!-- Eerste helft van de Object Artikel in het systeem genaamd ArticleData -->
       <div formGroupName="articleData">
-        <mat-grid-tile colspan="1">
-          <mat-form-field >
-            <mat-label>Kleur</mat-label>
-            <input matInput type="text" name="color" id="color" formControlName="color">
-            <mat-error *ngIf="!inputData.get('articleData.color').valid && inputData.get('articleData.color').touched">Kleur is <b>verplicht</b></mat-error>
-          </mat-form-field>
-        </mat-grid-tile>
-        <mat-grid-tile colspan="1">
-          <mat-form-field>
-            <!-- herhaling van andere benodigde attributen voor het toevoegen van een Artikel, productgroup & supplier-->
-          </mat-form-field>
-        </mat-grid-tile>
-        <div formGroupName="composition">
-        <mat-grid-tile colspan="1">
-          <mat-form-field>
-            <mat-label>Compositie percentage</mat-label>
-            <input matInput type="number" name="composition_percentage" id="composition_percentage" formControlName="composition_percentage">
-            <mat-error *ngIf="!inputData.get('articleData.composition.composition_percentage').valid && inputData.get('articleData.composition.composition_percentage').value > 100 && inputData.get('articleData.composition.composition_percentage').value != null">Percentage mag niet boven <b>100</b> zitten</mat-error>
-            <mat-error *ngIf="!inputData.get('articleData.composition.composition_percentage').valid && inputData.get('articleData.composition.composition_percentage').value <= 0 && inputData.get('articleData.composition.composition_percentage').value != null">Percentage mag niet onder <b>1</b> zitten</mat-error>
-            <mat-error *ngIf="!inputData.get('articleData.composition.composition_percentage').valid && inputData.get('articleData.composition.composition_percentage').touched">Compositie is <b>verplicht</b></mat-error>
-            <span matTextSuffix>%</span>
-          </mat-form-field>
-        </mat-grid-tile>
-        <mat-grid-tile>
-          <mat-form-field>
-            <mat-label>Compositie stof</mat-label>
-            <mat-select id="composition_category" formControlName="composition_category">
-              <mat-option
-                *ngFor="let requirement_category of requirement_categories; let i = index" [value]="requirement_category">
-                {{ requirement_category }}
-              </mat-option>
-            </mat-select>
-            <mat-error *ngIf="!inputData.get('articleData.composition.composition_category').valid && inputData.get('articleData.composition.composition_category').touched">Compositie is <b>verplicht</b></mat-error>
-          </mat-form-field>
-        </mat-grid-tile>
-      </div>
-        <mat-grid-tile>
-          <!-- pattern length -->
-        </mat-grid-tile>
-        <mat-grid-tile>
-          <!-- pattern width-->
-        </mat-grid-tile>
-
-        <mat-grid-tile>
-          <mat-form-field>
-            <mat-label>Is een Voorraad Artikel</mat-label>
-            <mat-select formControlName="stockRL">
-              <mat-option
-                *ngFor="let stockRLoption of stockRL.ifStockIsArticle; let i = index" [value]="stockRL.stockRLValues[i]">
-                {{ stockRLoption }}
-              </mat-option>
-            </mat-select>
-            <mat-error *ngIf="!inputData.get('articleData.stockRL').valid && inputData.get('articleData.stockRL').touched">Aangeven of dit een Voorraad Artikel is <b>verplicht</b></mat-error>
-          </mat-form-field>
-        </mat-grid-tile>
-        <mat-grid-tile>
-          <!-- eancode-->
-        </mat-grid-tile>
+        <!-- Elk attribuut gebonden aan de entiteit ArticleData met Validators -->
       </div>
       <!-- Tweede helft van het Object Artikel genaamd ArticleDescription -->
       <div formGroupName="articleDescription">
-        <mat-grid-tile>
-          <!-- layout-->
-        </mat-grid-tile>
-
-        <mat-grid-tile>
-          <!-- weight -->>
-        </mat-grid-tile>
-
-        <mat-grid-tile>
-          <!-- washcode-->
-        </mat-grid-tile>
-        <mat-grid-tile>
-          <!-- tiltable -->
-        </mat-grid-tile>
-
-        <mat-grid-tile>
-          <!-- articlenummer -->
-        </mat-grid-tile>
-        <mat-grid-tile>
-          <!-- type-->
-        </mat-grid-tile>
-        <mat-grid-tile>
-          <!-- clothwidth -->
-        </mat-grid-tile>
-
-        <mat-grid-tile>
-          <!-- minimum_stock -->
-        </mat-grid-tile>
-        <mat-grid-tile>
-          <!-- description -->
-        </mat-grid-tile>
+        <!-- Elk attribuut gebonden aan de entiteit ArticleDescription met Validators -->
       </div>
-      <!-- Hier komen de klanten vanuit de database -->
+      <!-- Hier komen de klanten vanuit de database dat gebonden moet worden aan de aangegeven artikel -->
       <mat-grid-tile>
-        <mat-form-field appearance="fill">
-          <mat-label>Klant</mat-label>
-          <mat-select formControlName="customer">
-            <mat-option *ngFor="let customer of customers" id="customer" [value]="customer" >
-              {{ customer.name }}
-            </mat-option>
-          </mat-select>
-          <mat-error *ngIf="!inputData.get('customer').valid && inputData.get('customer').touched">Klant is <b>verplicht</b></mat-error>
-        </mat-form-field>
       </mat-grid-tile>
 
       <mat-grid-tile colspan="3">
@@ -127,29 +37,6 @@ Paar exemplaren van code binnen privé repositories van Hogeschool Leiden.
 </form>
 ```
 ```Typescript
-import {Component, OnInit} from '@angular/core';
-import {FormControl, FormGroup, Validators} from "@angular/forms";
-import {Article} from "../../models/article.model";
-import {HttpService} from "../../../../services/http.service";
-import {ArticleData} from "../../models/article-data.model";
-import {ArticleDescription} from "../../models/article-description.model";
-import {firstValueFrom} from "rxjs";
-import {Customer} from "../../../core/models/customer.model";
-import {ArticleCustomerRec} from "../../models/ArticleCustomerRec.model";
-
-
-@Component({
-  selector: 'app-waste-add',
-  templateUrl: './waste-add.component.html',
-  styleUrls: ['./waste-add.component.scss']
-})
-
-// Roept een Service op die de API calls afhandelt in de Front-End
-export class WasteAddComponent implements OnInit{
-  constructor(private http: HttpService) {
-
-  }
-
 // Haalt alle klanten op in de database die bestellingen heeft.
   ngOnInit() {
     this.getCustomers()
@@ -165,24 +52,6 @@ export class WasteAddComponent implements OnInit{
   wasteDataID = 0
   wasteDescripton = 0
   customers: Customer[];
-
-  requirement_categories: string[] = [
-    'CO',
-    'PL',
-    'PES',
-    'LI',
-    'TREVIRA'
-  ]
-
-  not_tiltable = {
-    'ableToTilt': ['Kantelbaar', 'Onkantelbaar'],
-    'tiltValues': [false, true]
-  }
-
-  stockRL = {
-    'ifStockIsArticle': ['Ja', 'Nee'],
-    'stockRLValues': [true, false]
-  }
 
 // Inputform dat alle data opneemt van wat er is ingevult met regex op sommige numerieke invulvelden. Dit is gedaan op basis van de ontvangen informatie in een excel bestand van de opdrachtgever.
   inputData: FormGroup = new FormGroup({
@@ -228,7 +97,7 @@ export class WasteAddComponent implements OnInit{
     this.articleData.composition = this.inputData.get('articleData.composition.composition_percentage').value + "% " + this.inputData.get('articleData.composition.composition_category').value;
     this.articleDescription = this.inputData.controls['articleDescription'].value;
     this.customer = this.inputData.controls['customer'].value;
-// Iedere helft van de Artikel wordt doorverstuurd om opgeslagen te worden. En opnieuw opgehaald uit de database met een automatisch gegenereerde Id.
+// Iedere helft van de Artikel wordt doorverstuurd om opgeslagen te worden. En opnieuw opgehaald uit de database met een automatisch gegenereerde Id uit de Back-End.
     const data = await firstValueFrom(this.http.sendData<ArticleData>("/api/v2/article_data", this.articleData));
     const desc = await firstValueFrom(this.http.sendData<ArticleDescription>("/api/v2/article_description", this.articleDescription));
 
@@ -272,6 +141,8 @@ export class WasteAddComponent implements OnInit{
         </ul>
       </nav>
     </div>
+```
+``` HTML
     <div class="row">
       <table class="table table-striped">
         <thead>
@@ -289,6 +160,8 @@ export class WasteAddComponent implements OnInit{
               *ngFor="let day of week">{{day | date: "d"}} - {{day | date: "E"}}</th>
         </tr>
         </thead>
+```
+``` HTML
         <tbody>
         <!-- Alle passende data invullen per rij per toegevoegde medewerker waarvan de verlofdag goedgekeurd is -->
         <tr *ngFor="let currentUser of userDTOs" id="row_{{currentUser.id}}">
@@ -304,125 +177,8 @@ export class WasteAddComponent implements OnInit{
 </div>
 <app-footer></app-footer>
 ```
-``` SCSS
-body {
-  background-color: #e5e8d6;
-}
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
-
-.main-container {
-  min-height: 100vh;
-  background-color: #e5e8d6;
-}
-
-.container {
-  background-color: white;
-  overflow-y: scroll;
-}
-
-.calendar-table-centering {
-  width: 10%;
-  .cell-content {
-    aspect-ratio: 3 / 2;
-  }
-}
- /* kleur voor de huidige dag van de week */
-.active {
-  background-color: #f8dc0a;
-}
-/* kleur voor de toekomstige dagen */
-.row-title {
-  background-color: #3d9152;
-  color: #EAFFF5;
-}
-
-.adjust-content {
-  justify-content: end;
-}
-
-td {
-  border-right: 1px solid lightgrey;
-}
-
-th {
-  text-align: center;
-  position: sticky;
-  top: 0;
-}
-/* Is de css element dat in één vlak zit wanneer een medewerker verlof heeft op één dag. */
-.background-checkered {
-  opacity: 0.5;
-  background: repeating-linear-gradient( 45deg, #444cf7, #444cf7 5px, #e5e5f7 5px, #e5e5f7 25px );
-  border: #444cf7 solid 1px;
-  border-radius: 5px;
-
-}
-
-@media screen and (max-width: 600px) {
-  h2 {
-    font-size: 30px;
-  }
-
-  td > * {
-    font-size: 9px;
-  }
-
-  .row-title {
-    font-size: 9px;
-  }
-
-  button {
-    font-size: 15px;
-  }
-
-  .main-container {
-    min-height: 81vh;
-  }
-
-  .calendar-table-centering {
-    font-size: 9px;
-    .cell-content {
-      aspect-ratio: auto;
-      min-height: 40px;
-      width: 100%;
-    }
-  }
-/* Is de css element dat in één vlak zit wanneer een medewerker verlof heeft op één dag. */
-  .background-checkered {
-    opacity: 0.5;
-    background: repeating-linear-gradient(45deg, #444cf7, #444cf7 5px, #e5e5f7 5px, #e5e5f7 25px);
-    border: #444cf7 solid 1px;
-    border-radius: 5px;
-  }
-
-  .adjust-content {
-    justify-content: center;
-  }
-}
-```
 ``` Typescript
-import {Component, OnInit} from '@angular/core';
-import {UserDTOWithNames} from "../shared/models/UserDTOWithNames.model";
-import {LeaveRequestDTO} from "../shared/models/LeaveRequestDTO.model";
-import {LeaveRequestColeringService} from "../shared/services/LeaveRequestColering.service";
-import {UserService} from "../shared/services/user.service";
-import {User} from "../shared/models/User.model";
-import {LeaveRequestService} from "../shared/services/LeaveRequest.service";
-import {LeaveRequest} from "../shared/models/LeaveRequest.model";
-import {TeamService} from "../shared/services/Team.service";
-import {ChapterService} from "../shared/services/chapter.service";
-import {Team} from "../shared/models/Team.model";
-import {Chapter} from "../shared/models/Chapter.model";
-import {DateService} from "../shared/services/Date.service";
-import {firstValueFrom} from "rxjs";
-
-@Component({
-  selector: 'app-leaverequest-overview',
-  templateUrl: './leaverequest-overview.component.html',
-  styleUrls: ['./leaverequest-overview.component.scss']
-})
 export class LeaverequestOverviewComponent implements OnInit {
 
   constructor(
