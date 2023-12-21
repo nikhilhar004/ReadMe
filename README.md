@@ -1,12 +1,17 @@
 # ReadMe
 Paar exemplaren van code binnen privé repositories van Hogeschool Leiden.
 
-# Toevoegingsforum voor de Gordijnrollenbeheersysteem in Angular
-Dit was een use-case geweest voor het bedrijf genaamd: Atelier van der Lelie. Hierbij moest er een methode worden gemaakt om een nieuwe artikel van gordijnrol resten toe te voegen aan een door medestudenten opgezette database. Deze database was gebaseerd op alleen informatie dat was gegeven in een excel bestand, de waardes die waren meegeleverd zijn voornamelijk boolean, strings en integers. Hierdoor moesten op basis van de entiteiten de gegeven van de artikel dat wordt doorgegeven in twee delen samen met één klant die gebonden wordt aan de bestelling, de indelingen van objecten zijn:
-  -Artikel
-  -ArtikelData
-  -ArtikelDescriptie
-  -Klant
+# Atelier van der Lelie
+Samen met een groep van studenten moest ik als een team een applicatie maken voor het bedrijf Atelier van der Lelie. De algemene opdracht was een applicatie te maken dat kon helpen met de onderhoud en beheer van een oude netwerk van deze organisatie. In deze organisatie wordt textiel en maatwerk producten maken van ondermaten, echter levert dit restanten op die aan opdrachtgevers van deze organisatie wordt geleverd. Meestal wilden een kleine percentage van deze opdrachtgevers de restanten terug krijgen. Het organiseren van de restanten en bepalen of de opdrachtgevers deze restanten terug willen krijgen, het bedrijf vroeg voor een applicatie die daarmee kon helpen aan de team.
+
+## Toevoegingsforum voor de Gordijnrollenbeheersysteem in Angular
+De use case voor deze functionaliteit is, dat er een methode nodig was om een nieuwe artikel van ondermaten toe te voegen aan een database die door andere leden van de team is opgezet. Deze database was gebaseerd op alleen informatie dat was gegeven in een excel bestand, de waardes die aanwezig waren niet al te concreet. Hierdoor moesten ik en de team waarmee ik werkte op basis van de entiteiten de gegeven van de artikel dat wordt doorgegeven opsplitsen. Dit werd gedaan in twee delen samen met één klant die gebonden wordt aan de bestelling, de indelingen van objecten zijn:
+```
+  -Artikel,
+  -ArtikelData,
+  -ArtikelDescriptie,
+  -Klant,
+```
 Dit moest volgens de onderstaande figma exemplaar die was gemaakt, voordat dit project werd ontwikkeld in Angular.
 ```HTML
 <h2 mat-dialog-title>Afval Toevoegen</h2>
@@ -23,6 +28,7 @@ Dit moest volgens de onderstaande figma exemplaar die was gemaakt, voordat dit p
       </div>
       <!-- Hier komen de klanten vanuit de database dat gebonden moet worden aan de aangegeven artikel -->
       <mat-grid-tile>
+        <!-- Een selector om één klant te kiezen -->
       </mat-grid-tile>
 
       <mat-grid-tile colspan="3">
@@ -36,51 +42,12 @@ Dit moest volgens de onderstaande figma exemplaar die was gemaakt, voordat dit p
   </mat-dialog-actions>
 </form>
 ```
+Eerst moesten alle klanten worden opgehaald worden waarvan al een bestelling is uitgevoerd. Echter moest dit gemockt worden, doordat er geen andere applicatie van het bedrijf beschikbaar was om dit voor de team te regelen.
 ```Typescript
 // Haalt alle klanten op in de database die bestellingen heeft.
   ngOnInit() {
     this.getCustomers()
   }
-
-// Objecten aanmaken die gebonden worden aan de input velden van de forum. 
-  private articleData = new ArticleData;
-  private articleDescription = new ArticleDescription;
-  private article = new Article;
-  private articleWithCustomer: ArticleCustomerRec = new ArticleCustomerRec;
-  private customer = new Customer;
-
-  wasteDataID = 0
-  wasteDescripton = 0
-  customers: Customer[];
-
-// Inputform dat alle data opneemt van wat er is ingevult met regex op sommige numerieke invulvelden. Dit is gedaan op basis van de ontvangen informatie in een excel bestand van de opdrachtgever.
-  inputData: FormGroup = new FormGroup({
-    'articleData': new FormGroup({
-      'color': new FormControl(null, Validators.required),
-      'productgroup': new FormControl(null, Validators.required),
-      'supplier': new FormControl(null, Validators.required),
-      'patternWidth': new FormControl(null, [Validators.required, Validators.pattern(/^[0-9]+[0-9]*$/)]),
-      'patternLength': new FormControl(null, [Validators.required, Validators.pattern(/^[0-9]+[0-9]*$/)]),
-      'composition': new FormGroup({
-        'composition_percentage': new FormControl(null, [Validators.required, Validators.pattern(/^[1-9][0-9]?$|^100$/)]),
-        'composition_category': new FormControl(null, Validators.required)
-      }),
-      'eancode': new FormControl(null, Validators.required),
-      'stockRL': new FormControl(null, Validators.required)
-    }),
-    'articleDescription': new FormGroup({
-      'weight': new FormControl(null, [Validators.required, Validators.pattern(/^[1-9]+[0-9]*$/)]),
-      'layout': new FormControl(null, Validators.required),
-      'washcode': new FormControl(null, Validators.required),
-      'type': new FormControl(null, Validators.required),
-      'not_tiltable': new FormControl(null, Validators.required),
-      'articlenumber': new FormControl(null, Validators.required),
-      'clothWidth': new FormControl(null, [Validators.required, Validators.pattern(/^[1-9]+[0-9]*$/)]),
-      'minimumStock': new FormControl(null, [Validators.required, Validators.pattern(/^[0-9]+[0-9]*$/)]),
-      'description': new FormControl(null, Validators.required)
-    }),
-    'customer': new FormControl(null, Validators.required)
-  });
 
 // Benaming doorgeven van een gedeelte URL voor de GET request van de klanten.
   getCustomers() {
@@ -90,13 +57,25 @@ Dit moest volgens de onderstaande figma exemplaar die was gemaakt, voordat dit p
       }
     );
   }
-
-// Het aanpassen van de eerdere formaat dat is verwezen aan de team.
+```
+``` Typescript
+// Inputform dat alle data opneemt van wat er is ingevult met regex op sommige numerieke invulvelden. Dit is gedaan op basis van de ontvangen informatie in een excel bestand van de opdrachtgever. Alle losstaande FormControls binnen de twee nested FormGroups zijn voor lees gemak in dit exemplaar verwijderd.
+  inputData: FormGroup = new FormGroup({
+    'articleData': new FormGroup({
+    }),
+    'articleDescription': new FormGroup({
+    }),
+    'customer': new FormControl(null, Validators.required)
+  });
+```
+``` Typescript
+// Het binden van de form met de eerder gemaakte variabelen en deze verwerken op basis van de entiteiten in de database.
   async onSubmit() {
     this.articleData = this.inputData.controls['articleData'].value;
     this.articleData.composition = this.inputData.get('articleData.composition.composition_percentage').value + "% " + this.inputData.get('articleData.composition.composition_category').value;
     this.articleDescription = this.inputData.controls['articleDescription'].value;
     this.customer = this.inputData.controls['customer'].value;
+
 // Iedere helft van de Artikel wordt doorverstuurd om opgeslagen te worden. En opnieuw opgehaald uit de database met een automatisch gegenereerde Id uit de Back-End.
     const data = await firstValueFrom(this.http.sendData<ArticleData>("/api/v2/article_data", this.articleData));
     const desc = await firstValueFrom(this.http.sendData<ArticleDescription>("/api/v2/article_description", this.articleDescription));
@@ -105,23 +84,16 @@ Dit moest volgens de onderstaande figma exemplaar die was gemaakt, voordat dit p
     this.article.article_descriptionID = desc;
     this.articleWithCustomer.article = this.article;
     this.articleWithCustomer.customer = this.customer;
-// Dan wordt de Artikel met de klant opgeslagen
+// Dan wordt de Artikel met de klant met een verzoek naar de Back-End opgeslagen in de database.
     this.http.sendData<ArticleCustomerRec>("/api/v2/article", this.articleWithCustomer);
-
+// Maakt de inputForm leeg.
     this.onCancel();
   }
-
-  onCancel() {
-    this.inputData.reset();
-  }
-
 }
 ```
 
 # VerlofCalenderpagina voor de Technische Unie
 ``` HTML
-<app-navigation></app-navigation>
-<app-toasts></app-toasts>
 <div class="main-container d-flex">
   <div class="container shadow-lg">
     <div class="row">
@@ -175,36 +147,10 @@ Dit moest volgens de onderstaande figma exemplaar die was gemaakt, voordat dit p
     </div>
   </div>
 </div>
-<app-footer></app-footer>
 ```
 
 ``` Typescript
-export class LeaverequestOverviewComponent implements OnInit {
-
-  constructor(
-    public leaveRequestColoringService: LeaveRequestColeringService,
-    private leaverequestService: LeaveRequestService,
-    private userService: UserService,
-    private teamService: TeamService,
-    private chapterService: ChapterService,
-    private dateService: DateService
-  ) {
-  }
-/* de onderstaande variabelen zijn voor het bepalen van de week en dag */
-  public curr = new Date();
-  public week: Date[] = [];
-  public currentWeekNumber: number;
-  public currentWeek: { userId: string, leaveRequestDTO: LeaveRequestDTO[] }[] = []
-  public shownMonth = new Date();
-  public magicalWeekInMsNumber = 7 * 24 * 60 * 60 * 1000;
-/* de onderstaande variabelen zijn voor het opnemen van de data van de medewerkers en verlofverzoeken */
-  public userDTOs: UserDTOWithNames[] = [];
-  private collectedUserData: User[] = [];
-  private collectedAcceptedLeaveRequests: LeaveRequest[] = [];
-  private collectedTeams: Team[] = [];
-  private collectedChapters: Chapter[] = [];
-
-
+/* Opzet van sessiontoken voor het correct opnemen van de huidige week en dag. */
   ngOnInit() {
     let curr = new Date
     this.checkForWindowSessionStorageToken()
@@ -221,7 +167,25 @@ export class LeaverequestOverviewComponent implements OnInit {
       this.week.push(insertableDay)
     }
     this.shownMonth = new Date(this.curr.getTime() + (this.currentWeekNumber * this.magicalWeekInMsNumber));
-/* alle medewerkers in de aangegeven team verbinden aan hun chapters en verlofverzoeken die zijn geaccepteerd in de huidige week */
+```
+``` Typescript
+/* Het bewaren van de huidige week dat is berekend in een session token voor snellere navigatie in de calender.
+ Deze token wordt ook gebruikt om één week in de toekomst, in de verleden en meteen terug te gaan de huidige week.*/
+  private checkForWindowSessionStorageToken() {
+    let stringedRetrievedWeekNumber;
+    if (!(window.sessionStorage.hasOwnProperty('currentWeekNumber'))) {
+      window.sessionStorage.setItem('currentWeekNumber', JSON.stringify(0));
+      this.currentWeekNumber = 0;
+    } else {
+      stringedRetrievedWeekNumber = window.sessionStorage.getItem('currentWeekNumber');
+      if (stringedRetrievedWeekNumber != null) {
+        this.currentWeekNumber = JSON.parse(stringedRetrievedWeekNumber);
+      }
+    }
+  }
+```
+``` Typescript
+/* Alle medewerkers in de aangegeven team verbinden aan hun chapters en verlofverzoeken die zijn geaccepteerd in de huidige week dat in de session token zit. */
     this.userService.getAllUsers().subscribe({
       next: () => {
         this.collectedUserData = this.userService.users;
@@ -249,23 +213,11 @@ export class LeaverequestOverviewComponent implements OnInit {
         });
       }
     });
-
   }
 
-/* het bewaren van de huidige week dat is berekend in een session token voor snellere navigatie in de calender */
-  private checkForWindowSessionStorageToken() {
-    let stringedRetrievedWeekNumber;
-    if (!(window.sessionStorage.hasOwnProperty('currentWeekNumber'))) {
-      window.sessionStorage.setItem('currentWeekNumber', JSON.stringify(0));
-      this.currentWeekNumber = 0;
-    } else {
-      stringedRetrievedWeekNumber = window.sessionStorage.getItem('currentWeekNumber');
-      if (stringedRetrievedWeekNumber != null) {
-        this.currentWeekNumber = JSON.parse(stringedRetrievedWeekNumber);
-      }
-    }
-  }
-
+```
+``` Typescript
+/* Ophalen van alle medewerkergegevens die in dezelfde team als degene die is ingelogd, echter isoleert het de andere teams die niet tot behoren */
   private getUserData() {
     let shortenedUserList: UserDTOWithNames[] = []
     for (let user of this.userService.users) {
@@ -316,7 +268,7 @@ export class LeaverequestOverviewComponent implements OnInit {
     });
   }
 
-/* Het invullen van de kalender in HTML met de opgenomen data */
+/* Het aanpassen van de kalender in HTML op basis van id met de opgenomen data */
   public processCalenderCells(data: { userId: string, leaveRequestDTO: LeaveRequestDTO[] }[]) {
     for (const userLeaveRequests of data) {
       let targetableId = userLeaveRequests.userId + "_cell_";
@@ -336,40 +288,6 @@ export class LeaverequestOverviewComponent implements OnInit {
 
       }
     }
-  }
-
-  public toNextWeek() {
-    let showedWeekNumber;
-    if (window.sessionStorage.getItem('currentWeekNumber') != null) {
-      showedWeekNumber = window.sessionStorage.getItem('currentWeekNumber')
-      if (showedWeekNumber != null) {
-        showedWeekNumber = JSON.parse(showedWeekNumber);
-        showedWeekNumber += 1;
-        window.sessionStorage.removeItem('currentWeekNumber');
-        window.sessionStorage.setItem('currentWeekNumber', showedWeekNumber)
-      }
-    }
-    window.location.reload();
-  }
-
-  public toToday() {
-    window.sessionStorage.removeItem('currentWeekNumber');
-    window.sessionStorage.setItem('currentWeekNumber', JSON.stringify(0));
-    window.location.reload();
-  }
-
-  public toPreviousWeek() {
-    let showedWeekNumber;
-    if (window.sessionStorage.getItem('currentWeekNumber') != null) {
-      showedWeekNumber = window.sessionStorage.getItem('currentWeekNumber')
-      if (showedWeekNumber != null) {
-        showedWeekNumber = JSON.parse(showedWeekNumber);
-        showedWeekNumber -= 1;
-        window.sessionStorage.removeItem('currentWeekNumber');
-        window.sessionStorage.setItem('currentWeekNumber', showedWeekNumber)
-      }
-    }
-    window.location.reload();
   }
 }
 ```
