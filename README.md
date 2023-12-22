@@ -42,6 +42,19 @@ Dit moest volgens de onderstaande figma exemplaar die was gemaakt, voordat dit p
   </mat-dialog-actions>
 </form>
 ```
+Een voorbeeld van een Formcontrol binnen de FormGroup van binnen de gehele toevoegingsforum. 
+``` HTML
+<mat-grid-tile colspan="1">
+  <mat-form-field>
+    <mat-label>Compositie percentage</mat-label>
+    <input matInput type="number" name="composition_percentage" id="composition_percentage" formControlName="composition_percentage">
+    <mat-error *ngIf="!inputData.get('articleData.composition.composition_percentage').valid && inputData.get('articleData.composition.composition_percentage').value > 100 && inputData.get('articleData.composition.composition_percentage').value != null">Percentage mag niet boven <b>100</b> zitten</mat-error>
+    <mat-error *ngIf="!inputData.get('articleData.composition.composition_percentage').valid && inputData.get('articleData.composition.composition_percentage').value <= 0 && inputData.get('articleData.composition.composition_percentage').value != null">Percentage mag niet onder <b>1</b> zitten</mat-error>
+    <mat-error *ngIf="!inputData.get('articleData.composition.composition_percentage').valid && inputData.get('articleData.composition.composition_percentage').touched">Compositie is <b>verplicht</b></mat-error>
+    <span matTextSuffix>%</span>
+  </mat-form-field>
+</mat-grid-tile>
+```
 Eerst moesten alle klanten worden opgehaald worden waarvan al een bestelling is uitgevoerd. Echter moest dit gemockt worden, doordat er geen andere applicatie van het bedrijf beschikbaar was om dit voor de team te regelen.
 ```Typescript
 // Haalt alle klanten op in de database die bestellingen heeft.
@@ -94,7 +107,11 @@ Het proces als de data binnen de forum valid is en vervolgens alles door de mede
 }
 ```
 
-# VerlofCalenderpagina voor de Technische Unie
+# De Technische Unie
+Een elektronica winkel dat hulp nodig had bij het organiseren van de verlofdagen die werden gepland in een excel bestand. Echter vond het bedrijf deze aanpak onhandig en was er veel moeite in het goed bekijken of schema's van managers en medewerkers overlappen of niet. Het bedrijf vroeg voor een applicatie dat verlofaanvragen kon aanmaken en het doorleveren aan de managers binnen een bepaalde sectie. Vervolgens mogen de medewerkers alleen binnen hun eigen team alleen geaccepteerde verlofdagen zien, zonder dat andere teams het kunnen.
+
+## VerlofKalenderpagina
+De use-case voor deze scenario is het maken van een verlofkalender dat op basis van wie is ingelogd, vertoont wie er wanneer verlof heeft per dag in een weekkalender. Als een medewerker is ingelogd, mag die alleen de verlofdagen van zijn team zien. Maar de managers horen alle teams te kunnen zien. De kalender hoort één week in het verleden en in de toekomst kunnen navigeren. Uiteindelijk moest er de mogelijkheid zijn voor het terug navigeren naar de huidige week.
 ``` HTML
 <div class="main-container d-flex">
   <div class="container shadow-lg">
@@ -116,6 +133,7 @@ Het proces als de data binnen de forum valid is en vervolgens alles door de mede
       </nav>
     </div>
 ```
+In de onderstaande codestuk wordt de bovenste rij van tabs vertoond met de algemene data van de medewerkers die in dezelfde team zit. Daarnaast krijgt elk dag op basis van de huidige dag of een specifieke kleur.
 ``` HTML
     <div class="row">
       <table class="table table-striped">
@@ -135,6 +153,7 @@ Het proces als de data binnen de forum valid is en vervolgens alles door de mede
         </tr>
         </thead>
 ```
+In dit andere onderstaande code stuk is voor het inladen van eerder opgenomen data van meerdere medewerkers aan de hand van de persoon dat is ingelogd. In de eerste sectie van de rij komt de medewerkersdata in welk team en chapter ze tot behoren. Dan komt de volledige naam van de medewerker ernaast te staan. Ten slotte lege cellen plaatsen voor de kalender en ze individueel op basis van de medewerker's id en dag een eigen id geven. Deze id van een lege cel kan verwezen worden wanneer een medewerker op die dag verlof heeft.
 ``` HTML
         <tbody>
         <!-- Alle passende data invullen per rij per toegevoegde medewerker waarvan de verlofdag goedgekeurd is -->
@@ -219,7 +238,7 @@ Het proces als de data binnen de forum valid is en vervolgens alles door de mede
 
 ```
 ``` Typescript
-/* Ophalen van alle medewerkergegevens die in dezelfde team als degene die is ingelogd, echter isoleert het de andere teams die niet tot behoren */
+/* Ophalen van alle medewerkergegevens die in dezelfde team als degene die is ingelogd, echter isoleert het de andere teams die niet tot behoren. De managers krijgen toegang tot elk team in de verlofkalender. */
   private getUserData() {
     let shortenedUserList: UserDTOWithNames[] = []
     for (let user of this.userService.users) {
@@ -241,7 +260,8 @@ Het proces als de data binnen de forum valid is en vervolgens alles door de mede
     }
     return shortenedUserList;
   }
-
+```
+``` Typescript
 /* het benodigde informatie ophalen van de geaccepteerde verlofverzoeken die relevant zijn voor het invullen van de kalender per dag. */
   private async getCalenderData(): Promise<{ userId: string, leaveRequestDTO: LeaveRequestDTO[] }[]> {
     let leaveRequestDTOList: { userId: string, leaveRequestDTO: LeaveRequestDTO[] }[] = [];
@@ -269,7 +289,8 @@ Het proces als de data binnen de forum valid is en vervolgens alles door de mede
       resolve(leaveRequestDTOList);
     });
   }
-
+```
+``` Typescript
 /* Het aanpassen van de kalender in HTML op basis van id met de opgenomen data */
   public processCalenderCells(data: { userId: string, leaveRequestDTO: LeaveRequestDTO[] }[]) {
     for (const userLeaveRequests of data) {
