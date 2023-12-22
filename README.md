@@ -7,10 +7,10 @@ Samen met een groep van studenten moest ik als een team een applicatie maken voo
 ## Toevoegingsforum voor de Gordijnrollenbeheersysteem in Angular
 De use case voor deze functionaliteit is, dat er een methode nodig was om een nieuwe artikel van ondermaten toe te voegen aan een database die door andere leden van de team is opgezet. Deze database was gebaseerd op alleen informatie dat was gegeven in een excel bestand, de waardes die aanwezig waren niet al te concreet. Hierdoor moesten ik en de team waarmee ik werkte op basis van de entiteiten de gegeven van de artikel dat wordt doorgegeven opsplitsen. Dit werd gedaan in twee delen samen met één klant die gebonden wordt aan de bestelling, de indelingen van objecten zijn:
 ```
-  -Artikel,
-  -ArtikelData,
-  -ArtikelDescriptie,
-  -Klant,
+  -Artikel (Bindt ArtikelData en ArtikelDescriptie via ids),
+  -ArtikelData (Bevat meerdere numerieke waardes),
+  -ArtikelDescriptie (Bevat beschrijvingen en extra info),
+  -Klant (Klant dat gebonden zal worden aan één Artikel)
 ```
 Dit moest volgens de onderstaande figma exemplaar die was gemaakt, voordat dit project werd ontwikkeld in Angular.
 ```HTML
@@ -58,6 +58,7 @@ Eerst moesten alle klanten worden opgehaald worden waarvan al een bestelling is 
     );
   }
 ```
+Een benodigde forum met invulvelden voor elk stuk informatie dat een artikel nodig heeft on toegevoegd te worden aan de database en aan een klant dat eerder is opgehaald te verbinden. Iedere invulveld had verschillende Validators nodig die pastte bij de context van de attribuut van ieder object.
 ``` Typescript
 // Inputform dat alle data opneemt van wat er is ingevult met regex op sommige numerieke invulvelden. Dit is gedaan op basis van de ontvangen informatie in een excel bestand van de opdrachtgever. Alle losstaande FormControls binnen de twee nested FormGroups zijn voor lees gemak in dit exemplaar verwijderd.
   inputData: FormGroup = new FormGroup({
@@ -68,6 +69,7 @@ Eerst moesten alle klanten worden opgehaald worden waarvan al een bestelling is 
     'customer': new FormControl(null, Validators.required)
   });
 ```
+Het proces als de data binnen de forum valid is en vervolgens alles door de medewerker is ingevuld voor het versturen. Daarna worden entiteiten van ArtikelData en ArtikelDescriptie individueel doorgegeven naar de backend om een nieuwe id aan te maken. De volledige entiteiten worden pas ontvangen uit de Back-End als deze entiteiten zijn opgeslagen in de database. Vervolgens worden de ids van de twee entiteiten gebruikt voor het maken van de Artikel entiteit dat de klant en de artikel eigenschappen aan elkaar bindt met voornamelijk de ids. Deze gemaakte Artikel entiteit wordt dan uiteindelijk naar de database verstuurd om alle componenten aan elkaar te linken.
 ``` Typescript
 // Het binden van de form met de eerder gemaakte variabelen en deze verwerken op basis van de entiteiten in de database.
   async onSubmit() {
