@@ -169,7 +169,7 @@ In dit andere onderstaande code stuk is voor het inladen van eerder opgenomen da
   </div>
 </div>
 ```
-
+Aan het begin moet de applicatie de huidige week zien te krijgen en deze waarde stoppen in een sessiontoken voor gemak van de gebruiker. Echter door de internationale setting van het ophalen van een datum wordt het meestal gezet naar van Zondag naar Zaterdag, dit wordt ook aangepast naar Maandag tot Zondag. 
 ``` Typescript
 /* Opzet van sessiontoken voor het correct opnemen van de huidige week en dag. */
   ngOnInit() {
@@ -189,6 +189,7 @@ In dit andere onderstaande code stuk is voor het inladen van eerder opgenomen da
     }
     this.shownMonth = new Date(this.curr.getTime() + (this.currentWeekNumber * this.magicalWeekInMsNumber));
 ```
+De onderstaande gedeelte wordt er gecontroleerd of de sessiontoken bestaat, als het bestaat dan wordt deze opgehaald. Voor het geval van niet wordt het aangemaakt en meteen opgeslagen.
 ``` Typescript
 /* Het bewaren van de huidige week dat is berekend in een session token voor snellere navigatie in de calender.
  Deze token wordt ook gebruikt om één week in de toekomst, in de verleden en meteen terug te gaan de huidige week.*/
@@ -205,6 +206,7 @@ In dit andere onderstaande code stuk is voor het inladen van eerder opgenomen da
     }
   }
 ```
+Vanuit een service worden eerst alle gebruikers opgehaald, van op basis van de gebruikers kijken welke geaccepteerde verlofdagen ze hebben. Nadat deze informatie is opgehaald, dan worden de chapters en teams gebonden opgehaald van de medewerkers. En uiteindelijk met het verzamelde data wordt alle verlofdagen op basis van de huidige week vertoond met medewerker gegevens ingevuld in de lege cellen van de kalender.
 ``` Typescript
 /* Alle medewerkers in de aangegeven team verbinden aan hun chapters en verlofverzoeken die zijn geaccepteerd in de huidige week dat in de session token zit. */
     this.userService.getAllUsers().subscribe({
@@ -237,6 +239,7 @@ In dit andere onderstaande code stuk is voor het inladen van eerder opgenomen da
   }
 
 ```
+Hier worden de elk medewerker één voor één gebonden aan hun bijbehorende chapter en team binnen de organisatie. Daarna wordt alleen de benodige informatie dat in de kalender wordt vertoond verder doorgeleverd in de applicatie.
 ``` Typescript
 /* Ophalen van alle medewerkergegevens die in dezelfde team als degene die is ingelogd, echter isoleert het de andere teams die niet tot behoren. De managers krijgen toegang tot elk team in de verlofkalender. */
   private getUserData() {
@@ -261,6 +264,7 @@ In dit andere onderstaande code stuk is voor het inladen van eerder opgenomen da
     return shortenedUserList;
   }
 ```
+Medewerkers die worden opgehaald verbinden aan de gaccepteerde verlofaanvragen binnen de kalender. Hiervan worden alleen de relevanten stukken van data opgehaald en naast de bijbehorende medewerker geplaatst.
 ``` Typescript
 /* het benodigde informatie ophalen van de geaccepteerde verlofverzoeken die relevant zijn voor het invullen van de kalender per dag. */
   private async getCalenderData(): Promise<{ userId: string, leaveRequestDTO: LeaveRequestDTO[] }[]> {
@@ -290,6 +294,7 @@ In dit andere onderstaande code stuk is voor het inladen van eerder opgenomen da
     });
   }
 ```
+De onderstaande method is bedoeld voor het oppakken van de eerder vertoonde lege cellen met een eigen id en deze invullen als er een verlofperiode op die dag zit. Dit wordt gedaan op basis van de eind en begin datums van elk verlof dat is opgenomen van de medewerkers die zijn geaccepteerd.
 ``` Typescript
 /* Het aanpassen van de kalender in HTML op basis van id met de opgenomen data */
   public processCalenderCells(data: { userId: string, leaveRequestDTO: LeaveRequestDTO[] }[]) {
